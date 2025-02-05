@@ -53,6 +53,6 @@ public class PlayerController : MonoBehaviour
         Vector3 direction = (forwardMovement + rightMovement).normalized;
 
         // Apply movement force
-        rb.AddForce(direction * speedValue);
+        rb.velocity = (direction * speedValue);
     }
 }
