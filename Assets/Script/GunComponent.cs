@@ -1,3 +1,5 @@
+using System;
+using NUnit.Framework;
 using UnityEngine;
 
 public class GunComponent : MonoBehaviour
@@ -14,20 +16,37 @@ public class GunComponent : MonoBehaviour
         // TODO add the logic to track player keeping the input down.
         if (Input.GetButtonUp("Fire1"))
         {
+            isCharging = true;
+            chargeTime = 0.0f;
+        }
+        
+        if (Input.GetButton("Fire1") && isCharging)
+        {
+            chargeTime += Time.deltaTime;
+            chargeTime = Mathf.Clamp(chargeTime, 0, maxChargeTime);
+        }
+
+        if (Input.GetButtonUp("Fire1") && isCharging)
+        {
             ShootBullet();
+            isCharging = false;
         }
     }
 
    
-    void ShootBullet()
-    {
-        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-       
-        // TODO change that equation so that it adds an impulse that follows charge time
-        float bulletImpulse = bulletMaxImpulse;
+    void ShootBullet() 
 
-        // An impulse is a force you apply on a object in a single instant.
-        rb.AddForce(bulletSpawnPoint.forward * bulletImpulse, ForceMode.Impulse);
-    }
+{ 
+
+        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation); 
+
+        Rigidbody rb = bullet.GetComponent<Rigidbody>(); 
+
+        // Scale bullet force based on charge time 
+
+        float bulletImpulse = (chargeTime / maxChargeTime) * bulletMaxImpulse; 
+
+        rb.AddForce(bulletSpawnPoint.forward * bulletImpulse, ForceMode.Impulse); 
+
+    } 
 }
